@@ -35,10 +35,10 @@ Tasks:
         - Unit Tests
 
     Prerequisites:
-        GIT
-        VS 2017(.NET Core 2.0)
-        SQLServer 2012
-        (Developer/Express Edition) 
+       	- GIT
+ 		- Any IDE
+ 		- .NET Core 2.0
+ 		- SQL Server 2012+
 
 
    Development Environment:
