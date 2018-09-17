@@ -1,7 +1,7 @@
 From b23f51bd582e041d17a09913eec1fb9c0f685bd2 Mon Sep 17 00:00:00 2001
 From: Jagbir Saini <jagbirsaini152@gmail.com>
 Date: Mon, 10 Sep 2018 13:17:51 +0530
-Subject: [PATCH] My submission
+Subject: [PATCH 1/2] My submission
 XOV: v1
 
 ---
@@ -2725,6 +2725,2757 @@ index 0000000..506c70a
 +  ]
 +}
 \ No newline at end of file
+-- 
+2.18.0.windows.1
+
+
+From 9e761a26577248c75914ea0ff79007cc664b28b9 Mon Sep 17 00:00:00 2001
+From: Jagbir Saini <jagbirsaini152@gmail.com>
+Date: Mon, 10 Sep 2018 13:21:18 +0530
+Subject: [PATCH 2/2] add_patch_file
+XOV: v1
+
+---
+ cross-exchange-dotnet_jagbir.patch | 2730 ++++++++++++++++++++++++++++
+ 1 file changed, 2730 insertions(+)
+ create mode 100644 cross-exchange-dotnet_jagbir.patch
+
+diff --git a/cross-exchange-dotnet_jagbir.patch b/cross-exchange-dotnet_jagbir.patch
+new file mode 100644
+index 0000000..5ad7778
+--- /dev/null
++++ b/cross-exchange-dotnet_jagbir.patch
+@@ -0,0 +1,2730 @@
++From b23f51bd582e041d17a09913eec1fb9c0f685bd2 Mon Sep 17 00:00:00 2001
++From: Jagbir Saini <jagbirsaini152@gmail.com>
++Date: Mon, 10 Sep 2018 13:17:51 +0530
++Subject: [PATCH] My submission
++XOV: v1
++
++---
++ .../PortfolioConrollerTests.cs                |   50 +
++ CrossExchange.Tests/ShareControllerTests.cs   |   13 +-
++ CrossExchange.Tests/TradeControllerTests.cs   |   30 +
++ CrossExchange/Controller/ShareController.cs   |    2 +-
++ CrossExchange/Controller/TradeController.cs   |   55 +-
++ CrossExchange/appsettings.json                |    2 +-
++ Readme.txt                                    |    8 +-
++ coverage-hits.txt                             |   48 +
++ coverage.json                                 | 2399 +++++++++++++++++
++ 9 files changed, 2596 insertions(+), 11 deletions(-)
++ create mode 100644 CrossExchange.Tests/PortfolioConrollerTests.cs
++ create mode 100644 CrossExchange.Tests/TradeControllerTests.cs
++ create mode 100644 coverage-hits.txt
++ create mode 100644 coverage.json
++
++diff --git a/CrossExchange.Tests/PortfolioConrollerTests.cs b/CrossExchange.Tests/PortfolioConrollerTests.cs
++new file mode 100644
++index 0000000..88ab70c
++--- /dev/null
+++++ b/CrossExchange.Tests/PortfolioConrollerTests.cs
++@@ -0,0 +1,50 @@
+++﻿using System;
+++using System.Threading.Tasks;
+++using CrossExchange.Controller;
+++using Microsoft.AspNetCore.Mvc;
+++using NUnit.Framework;
+++using Moq;
+++
+++namespace CrossExchange.Tests
+++{
+++    public class PortfolioConrollerTests
+++    {
+++        private readonly Mock<IPortfolioRepository> _portfolioRepositoryMock = new Mock<IPortfolioRepository>();
+++        private readonly Mock<IShareRepository> _shareRepositoryMock = new Mock<IShareRepository>();
+++        private readonly Mock<ITradeRepository> _tradeRepositoryMock = new Mock<ITradeRepository>();
+++
+++        private readonly PortfolioController _portfolioController;
+++
+++        public PortfolioConrollerTests()
+++        {
+++            _portfolioController = new PortfolioController(_shareRepositoryMock.Object,_tradeRepositoryMock.Object, _portfolioRepositoryMock.Object);
+++        }
+++
+++        [Test]
+++        public async Task Post_ShouldInsertPortfolio()
+++        {
+++            var obj = new Portfolio
+++            {
+++                Name="Jagbir"
+++            };
+++
+++            // Arrange
+++
+++            // Act
+++            var result = await _portfolioController.Post(obj);
+++
+++            // Assert
+++            Assert.NotNull(result);
+++
+++             var createdResult = result as CreatedResult;
+++            Assert.NotNull(createdResult);
+++            Assert.AreEqual(201, createdResult.StatusCode);
+++        }
+++        [Test]
+++        public async Task Get_ShouldGetPortfolio()
+++        {
+++            var result = await _portfolioController.GetPortfolioInfo(1);
+++            Assert.NotNull(result);
+++        }
+++    }
+++}
++diff --git a/CrossExchange.Tests/ShareControllerTests.cs b/CrossExchange.Tests/ShareControllerTests.cs
++index 3f2f17d..4533e10 100644
++--- a/CrossExchange.Tests/ShareControllerTests.cs
+++++ b/CrossExchange.Tests/ShareControllerTests.cs
++@@ -40,6 +40,17 @@ namespace CrossExchange.Tests
++             Assert.NotNull(createdResult);
++             Assert.AreEqual(201, createdResult.StatusCode);
++         }
++-        
+++        [Test]
+++        public async Task Get_ShouldGetShare()
+++        {
+++            var result = await _shareController.Get("REL");
+++            Assert.NotNull(result);
+++        }
+++        //[Test]
+++        //public async Task Get_ShouldGetShareLatest()
+++        //{
+++        //    var result = await _shareController.GetLatestPrice("REL");
+++        //    Assert.NotNull(result);
+++        //}
++     }
++ }
++diff --git a/CrossExchange.Tests/TradeControllerTests.cs b/CrossExchange.Tests/TradeControllerTests.cs
++new file mode 100644
++index 0000000..3c75ead
++--- /dev/null
+++++ b/CrossExchange.Tests/TradeControllerTests.cs
++@@ -0,0 +1,30 @@
+++﻿using System;
+++using System.Threading.Tasks;
+++using CrossExchange.Controller;
+++using Microsoft.AspNetCore.Mvc;
+++using NUnit.Framework;
+++using Moq;
+++
+++namespace CrossExchange.Tests
+++{
+++    public class TradeControllerTests
+++    {
+++        private readonly Mock<IPortfolioRepository> _portfolioRepositoryMock = new Mock<IPortfolioRepository>();
+++        private readonly Mock<IShareRepository> _shareRepositoryMock = new Mock<IShareRepository>();
+++        private readonly Mock<ITradeRepository> _tradeRepositoryMock = new Mock<ITradeRepository>();
+++
+++        private readonly TradeController _tradeController;
+++
+++        public TradeControllerTests()
+++        {
+++            _tradeController = new TradeController(_shareRepositoryMock.Object, _tradeRepositoryMock.Object, _portfolioRepositoryMock.Object);
+++        }
+++
+++        [Test]
+++        public async Task Get_ShouldGetTrade()
+++        {
+++            var result = await _tradeController.GetAllTradings(1);
+++            Assert.NotNull(result);
+++        }
+++    }
+++}
++diff --git a/CrossExchange/Controller/ShareController.cs b/CrossExchange/Controller/ShareController.cs
++index 8ff4227..2cf84a4 100644
++--- a/CrossExchange/Controller/ShareController.cs
+++++ b/CrossExchange/Controller/ShareController.cs
++@@ -26,7 +26,7 @@ namespace CrossExchange.Controller
++         [HttpGet("{symbol}/Latest")]
++         public async Task<IActionResult> GetLatestPrice([FromRoute]string symbol)
++         {
++-            var share = await _shareRepository.Query().Where(x => x.Symbol.Equals(symbol)).FirstOrDefaultAsync();
+++            var share = await _shareRepository.Query().Where(x => x.Symbol.Equals(symbol)).OrderByDescending(x=>x.TimeStamp).FirstOrDefaultAsync();
++             return Ok(share?.Rate);
++         }
++ 
++diff --git a/CrossExchange/Controller/TradeController.cs b/CrossExchange/Controller/TradeController.cs
++index 3b51c75..3f77e40 100644
++--- a/CrossExchange/Controller/TradeController.cs
+++++ b/CrossExchange/Controller/TradeController.cs
++@@ -1,6 +1,7 @@
++ ﻿using System;
++ using System.Collections.Generic;
++ using System.Linq;
+++using System.Net.Http;
++ using System.Threading.Tasks;
++ using Microsoft.AspNetCore.Http;
++ using Microsoft.AspNetCore.Mvc;
++@@ -34,7 +35,8 @@ namespace CrossExchange.Controller
++ 
++ 
++         /*************************************************************************************************************************************
++-        For a given portfolio, with all the registered shares you need to do a trade which could be either a BUY or SELL trade. For a particular trade keep following conditions in mind:
+++        For a given portfolio, with all the registered shares you need to do a trade which could be either a BUY or SELL trade. 
+++        For a particular trade keep following conditions in mind:
++ 		BUY:
++         a) The rate at which the shares will be bought will be the latest price in the database.
++ 		b) The share specified should be a registered one otherwise it should be considered a bad request. 
++@@ -45,15 +47,60 @@ namespace CrossExchange.Controller
++ 		b) The Portfolio of the user should be registered otherwise it should be considered a bad request. 
++ 		c) The rate at which the shares will be sold will be the latest price in the database.
++         d) The number of shares should be sufficient so that it can be sold. 
++-        Hint: You need to group the total shares bought and sold of a particular share and see the difference to figure out if there are sufficient quantities available for SELL. 
+++        Hint: You need to group the total shares bought and sold of a particular share and see the difference to figure out if 
+++        there are sufficient quantities available for SELL. 
++ 
++         *************************************************************************************************************************************/
++ 
++         [HttpPost]
++         public async Task<IActionResult> Post([FromBody]TradeModel model)
++         {
++-            return Created("Trade", model);
+++            if (!ModelState.IsValid)
+++            {
+++                return BadRequest(ModelState);
+++            }
+++
+++            var portfolio = _portfolioRepository.Query().Where(x => x.Id == model.PortfolioId).ToList();
+++            if (portfolio == null || portfolio.Count == 0)
+++            { return BadRequest(ModelState); }
+++            var latestPrice = _shareRepository.Query().Where(x => x.Symbol.Equals(model.Symbol)).OrderByDescending(x => x.TimeStamp).FirstOrDefault();
+++            if (latestPrice == null)
+++            { return BadRequest(ModelState); }
+++            Trade tradeObj = null;
+++            if (model.Action == "BUY")
+++            {
+++                tradeObj = new Trade();
+++                tradeObj.PortfolioId = model.PortfolioId;
+++                tradeObj.Symbol = model.Symbol;
+++                tradeObj.NoOfShares = model.NoOfShares;
+++                tradeObj.Action = model.Action;
+++                tradeObj.Price = model.NoOfShares * latestPrice.Rate;
+++            }
+++
+++            if (model.Action == "SELL")
+++            {
+++                var shareDetails = _tradeRepository.Query().Where(x => x.PortfolioId == model.PortfolioId && x.Symbol == model.Symbol).ToList();
+++                if (shareDetails == null || shareDetails.Count == 0)
+++                { return BadRequest(ModelState); }
+++                var totalBought = shareDetails.Where(x => x.Action == "BUY").Sum(x => x.NoOfShares);
+++                var totalSold = shareDetails.Where(x => x.Action == "SELL").Sum(x => x.NoOfShares);
+++                if (totalBought - totalSold >= model.NoOfShares)
+++                {
+++                    tradeObj = new Trade();
+++                    tradeObj.PortfolioId = model.PortfolioId;
+++                    tradeObj.Symbol = model.Symbol;
+++                    tradeObj.NoOfShares = model.NoOfShares;
+++                    tradeObj.Action = model.Action;
+++                    tradeObj.Price = model.NoOfShares * latestPrice.Rate;
+++                }
+++                else
+++                {
+++                    return BadRequest(ModelState);
+++                }
+++            }
+++            await _tradeRepository.InsertAsync(tradeObj);
+++            return Created("Trade", tradeObj);
++         }
++-        
+++
++     }
++ }
++diff --git a/CrossExchange/appsettings.json b/CrossExchange/appsettings.json
++index 4eb191b..4363983 100644
++--- a/CrossExchange/appsettings.json
+++++ b/CrossExchange/appsettings.json
++@@ -1,6 +1,6 @@
++ ﻿{
++   "ConnectionStrings": {
++-    "DefaultConnection": "Server=.\\SQLEXPRESS;Database=CrossExchangeDb;Trusted_Connection=True;"
+++    "DefaultConnection": "Server=ICEN090\\SQLEXPRESS;Database=CrossExchangeDb;Trusted_Connection=True;"
++   },
++   "Logging": {
++     "IncludeScopes": false,
++diff --git a/Readme.txt b/Readme.txt
++index e8024b4..4198cd2 100644
++--- a/Readme.txt
+++++ b/Readme.txt
++@@ -35,10 +35,10 @@ Tasks:
++         - Unit Tests
++ 
++     Prerequisites:
++-        GIT
++-        VS 2017(.NET Core 2.0)
++-        SQLServer 2012
++-        (Developer/Express Edition) 
+++       	- GIT
+++ 		- Any IDE
+++ 		- .NET Core 2.0
+++ 		- SQL Server 2012+
++ 
++ 
++    Development Environment:
++diff --git a/coverage-hits.txt b/coverage-hits.txt
++new file mode 100644
++index 0000000..3833bb4
++--- /dev/null
+++++ b/coverage-hits.txt
++@@ -0,0 +1,48 @@
+++92
+++93
+++91
+++94
+++96
+++90
+++95
+++97
+++47
+++98
+++102
+++100
+++104
+++90
+++101
+++105
+++44
+++108
+++109
+++107
+++110
+++112
+++106
+++111
+++113
+++41
+++43
+++39
+++118
+++122
+++120
+++124
+++106
+++121
+++125
+++36
+++132
+++133
+++127
+++134
+++129
+++135
+++131
+++136
+++138
+++128
+++137
+++139
++diff --git a/coverage.json b/coverage.json
++new file mode 100644
++index 0000000..506c70a
++--- /dev/null
+++++ b/coverage.json
++@@ -0,0 +1,2399 @@
+++{
+++  "SourcePath": "C:\\Jagbir\\CrossExchange\\",
+++  "HitsFile": "C:\\Jagbir\\CrossExchange\\coverage-hits.txt",
+++  "ExtraAssemblies": [
+++    "C:\\Jagbir\\CrossExchange\\CrossExchange.Tests\\bin\\Debug\\netcoreapp2.0\\dotnet-minicover.dll"
+++  ],
+++  "Assemblies": [
+++    {
+++      "Name": "CrossExchange",
+++      "SourceFiles": {
+++        "CrossExchange\\Controller\\PortfolioController.cs": {
+++          "Instructions": [
+++            {
+++              "Id": 90,
+++              "StartLine": 10,
+++              "EndLine": 10,
+++              "StartColumn": 61,
+++              "EndColumn": 65,
+++              "Class": "CrossExchange.Controller.PortfolioController",
+++              "Method": "get__portfolioRepository",
+++              "MethodFullName": "CrossExchange.IPortfolioRepository CrossExchange.Controller.PortfolioController::get__portfolioRepository()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 91,
+++              "StartLine": 10,
+++              "EndLine": 10,
+++              "StartColumn": 66,
+++              "EndColumn": 70,
+++              "Class": "CrossExchange.Controller.PortfolioController",
+++              "Method": "set__portfolioRepository",
+++              "MethodFullName": "System.Void CrossExchange.Controller.PortfolioController::set__portfolioRepository(CrossExchange.IPortfolioRepository)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 92,
+++              "StartLine": 12,
+++              "EndLine": 12,
+++              "StartColumn": 9,
+++              "EndColumn": 145,
+++              "Class": "CrossExchange.Controller.PortfolioController",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.Controller.PortfolioController::.ctor(CrossExchange.IShareRepository,CrossExchange.ITradeRepository,CrossExchange.IPortfolioRepository)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 93,
+++              "StartLine": 14,
+++              "EndLine": 14,
+++              "StartColumn": 13,
+++              "EndColumn": 56,
+++              "Class": "CrossExchange.Controller.PortfolioController",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.Controller.PortfolioController::.ctor(CrossExchange.IShareRepository,CrossExchange.ITradeRepository,CrossExchange.IPortfolioRepository)",
+++              "Instruction": "IL_0008: ldarg "
+++            },
+++            {
+++              "Id": 94,
+++              "StartLine": 20,
+++              "EndLine": 20,
+++              "StartColumn": 13,
+++              "EndColumn": 96,
+++              "Class": "CrossExchange.Controller.PortfolioController/<GetPortfolioInfo>d__5",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.PortfolioController/<GetPortfolioInfo>d__5::MoveNext()",
+++              "Instruction": "IL_0024: ldarg "
+++            },
+++            {
+++              "Id": 95,
+++              "StartLine": 22,
+++              "EndLine": 22,
+++              "StartColumn": 13,
+++              "EndColumn": 34,
+++              "Class": "CrossExchange.Controller.PortfolioController/<GetPortfolioInfo>d__5",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.PortfolioController/<GetPortfolioInfo>d__5::MoveNext()",
+++              "Instruction": "IL_00b9: ldarg "
+++            },
+++            {
+++              "Id": 96,
+++              "StartLine": 20,
+++              "EndLine": 20,
+++              "StartColumn": 13,
+++              "EndColumn": 96,
+++              "Class": "CrossExchange.Controller.PortfolioController/<GetPortfolioInfo>d__5",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.PortfolioController/<GetPortfolioInfo>d__5::MoveNext()",
+++              "Instruction": "IL_0024: ldarg "
+++            },
+++            {
+++              "Id": 97,
+++              "StartLine": 22,
+++              "EndLine": 22,
+++              "StartColumn": 13,
+++              "EndColumn": 34,
+++              "Class": "CrossExchange.Controller.PortfolioController/<GetPortfolioInfo>d__5",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.PortfolioController/<GetPortfolioInfo>d__5::MoveNext()",
+++              "Instruction": "IL_00b9: ldarg "
+++            },
+++            {
+++              "Id": 98,
+++              "StartLine": 29,
+++              "EndLine": 29,
+++              "StartColumn": 13,
+++              "EndColumn": 37,
+++              "Class": "CrossExchange.Controller.PortfolioController/<Post>d__6",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.PortfolioController/<Post>d__6::MoveNext()",
+++              "Instruction": "IL_0012: ldarg "
+++            },
+++            {
+++              "Id": 99,
+++              "StartLine": 31,
+++              "EndLine": 31,
+++              "StartColumn": 17,
+++              "EndColumn": 47,
+++              "Class": "CrossExchange.Controller.PortfolioController/<Post>d__6",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.PortfolioController/<Post>d__6::MoveNext()",
+++              "Instruction": "IL_002a: ldarg "
+++            },
+++            {
+++              "Id": 100,
+++              "StartLine": 34,
+++              "EndLine": 34,
+++              "StartColumn": 13,
+++              "EndColumn": 59,
+++              "Class": "CrossExchange.Controller.PortfolioController/<Post>d__6",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.PortfolioController/<Post>d__6::MoveNext()",
+++              "Instruction": "IL_0046: ldarg "
+++            },
+++            {
+++              "Id": 101,
+++              "StartLine": 36,
+++              "EndLine": 36,
+++              "StartColumn": 13,
+++              "EndColumn": 60,
+++              "Class": "CrossExchange.Controller.PortfolioController/<Post>d__6",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.PortfolioController/<Post>d__6::MoveNext()",
+++              "Instruction": "IL_00b7: ldarg "
+++            },
+++            {
+++              "Id": 102,
+++              "StartLine": 29,
+++              "EndLine": 29,
+++              "StartColumn": 13,
+++              "EndColumn": 37,
+++              "Class": "CrossExchange.Controller.PortfolioController/<Post>d__6",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.PortfolioController/<Post>d__6::MoveNext()",
+++              "Instruction": "IL_0012: ldarg "
+++            },
+++            {
+++              "Id": 103,
+++              "StartLine": 31,
+++              "EndLine": 31,
+++              "StartColumn": 17,
+++              "EndColumn": 47,
+++              "Class": "CrossExchange.Controller.PortfolioController/<Post>d__6",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.PortfolioController/<Post>d__6::MoveNext()",
+++              "Instruction": "IL_002a: ldarg "
+++            },
+++            {
+++              "Id": 104,
+++              "StartLine": 34,
+++              "EndLine": 34,
+++              "StartColumn": 13,
+++              "EndColumn": 59,
+++              "Class": "CrossExchange.Controller.PortfolioController/<Post>d__6",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.PortfolioController/<Post>d__6::MoveNext()",
+++              "Instruction": "IL_0046: ldarg "
+++            },
+++            {
+++              "Id": 105,
+++              "StartLine": 36,
+++              "EndLine": 36,
+++              "StartColumn": 13,
+++              "EndColumn": 60,
+++              "Class": "CrossExchange.Controller.PortfolioController/<Post>d__6",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.PortfolioController/<Post>d__6::MoveNext()",
+++              "Instruction": "IL_00b7: ldarg "
+++            }
+++          ]
+++        },
+++        "CrossExchange\\Controller\\ShareController.cs": {
+++          "Instructions": [
+++            {
+++              "Id": 106,
+++              "StartLine": 11,
+++              "EndLine": 11,
+++              "StartColumn": 52,
+++              "EndColumn": 56,
+++              "Class": "CrossExchange.Controller.ShareController",
+++              "Method": "get__shareRepository",
+++              "MethodFullName": "CrossExchange.IShareRepository CrossExchange.Controller.ShareController::get__shareRepository()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 107,
+++              "StartLine": 11,
+++              "EndLine": 11,
+++              "StartColumn": 57,
+++              "EndColumn": 61,
+++              "Class": "CrossExchange.Controller.ShareController",
+++              "Method": "set__shareRepository",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController::set__shareRepository(CrossExchange.IShareRepository)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 108,
+++              "StartLine": 13,
+++              "EndLine": 13,
+++              "StartColumn": 9,
+++              "EndColumn": 65,
+++              "Class": "CrossExchange.Controller.ShareController",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController::.ctor(CrossExchange.IShareRepository)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 109,
+++              "StartLine": 15,
+++              "EndLine": 15,
+++              "StartColumn": 13,
+++              "EndColumn": 48,
+++              "Class": "CrossExchange.Controller.ShareController",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController::.ctor(CrossExchange.IShareRepository)",
+++              "Instruction": "IL_0008: ldarg "
+++            },
+++            {
+++              "Id": 110,
+++              "StartLine": 21,
+++              "EndLine": 21,
+++              "StartColumn": 13,
+++              "EndColumn": 96,
+++              "Class": "CrossExchange.Controller.ShareController/<Get>d__5",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController/<Get>d__5::MoveNext()",
+++              "Instruction": "IL_0024: ldarg "
+++            },
+++            {
+++              "Id": 111,
+++              "StartLine": 22,
+++              "EndLine": 22,
+++              "StartColumn": 13,
+++              "EndColumn": 31,
+++              "Class": "CrossExchange.Controller.ShareController/<Get>d__5",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController/<Get>d__5::MoveNext()",
+++              "Instruction": "IL_00be: ldarg "
+++            },
+++            {
+++              "Id": 112,
+++              "StartLine": 21,
+++              "EndLine": 21,
+++              "StartColumn": 13,
+++              "EndColumn": 96,
+++              "Class": "CrossExchange.Controller.ShareController/<Get>d__5",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController/<Get>d__5::MoveNext()",
+++              "Instruction": "IL_0024: ldarg "
+++            },
+++            {
+++              "Id": 113,
+++              "StartLine": 22,
+++              "EndLine": 22,
+++              "StartColumn": 13,
+++              "EndColumn": 31,
+++              "Class": "CrossExchange.Controller.ShareController/<Get>d__5",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController/<Get>d__5::MoveNext()",
+++              "Instruction": "IL_00be: ldarg "
+++            },
+++            {
+++              "Id": 114,
+++              "StartLine": 29,
+++              "EndLine": 29,
+++              "StartColumn": 13,
+++              "EndColumn": 148,
+++              "Class": "CrossExchange.Controller.ShareController/<GetLatestPrice>d__6",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController/<GetLatestPrice>d__6::MoveNext()",
+++              "Instruction": "IL_002e: ldarg "
+++            },
+++            {
+++              "Id": 115,
+++              "StartLine": 30,
+++              "EndLine": 30,
+++              "StartColumn": 13,
+++              "EndColumn": 36,
+++              "Class": "CrossExchange.Controller.ShareController/<GetLatestPrice>d__6",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController/<GetLatestPrice>d__6::MoveNext()",
+++              "Instruction": "IL_017d: ldarg "
+++            },
+++            {
+++              "Id": 116,
+++              "StartLine": 29,
+++              "EndLine": 29,
+++              "StartColumn": 13,
+++              "EndColumn": 148,
+++              "Class": "CrossExchange.Controller.ShareController/<GetLatestPrice>d__6",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController/<GetLatestPrice>d__6::MoveNext()",
+++              "Instruction": "IL_002e: ldarg "
+++            },
+++            {
+++              "Id": 117,
+++              "StartLine": 30,
+++              "EndLine": 30,
+++              "StartColumn": 13,
+++              "EndColumn": 36,
+++              "Class": "CrossExchange.Controller.ShareController/<GetLatestPrice>d__6",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController/<GetLatestPrice>d__6::MoveNext()",
+++              "Instruction": "IL_017d: ldarg "
+++            },
+++            {
+++              "Id": 118,
+++              "StartLine": 36,
+++              "EndLine": 36,
+++              "StartColumn": 13,
+++              "EndColumn": 37,
+++              "Class": "CrossExchange.Controller.ShareController/<Post>d__7",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController/<Post>d__7::MoveNext()",
+++              "Instruction": "IL_0012: ldarg "
+++            },
+++            {
+++              "Id": 119,
+++              "StartLine": 38,
+++              "EndLine": 38,
+++              "StartColumn": 17,
+++              "EndColumn": 47,
+++              "Class": "CrossExchange.Controller.ShareController/<Post>d__7",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController/<Post>d__7::MoveNext()",
+++              "Instruction": "IL_002a: ldarg "
+++            },
+++            {
+++              "Id": 120,
+++              "StartLine": 41,
+++              "EndLine": 41,
+++              "StartColumn": 13,
+++              "EndColumn": 55,
+++              "Class": "CrossExchange.Controller.ShareController/<Post>d__7",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController/<Post>d__7::MoveNext()",
+++              "Instruction": "IL_0046: ldarg "
+++            },
+++            {
+++              "Id": 121,
+++              "StartLine": 43,
+++              "EndLine": 43,
+++              "StartColumn": 13,
+++              "EndColumn": 56,
+++              "Class": "CrossExchange.Controller.ShareController/<Post>d__7",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController/<Post>d__7::MoveNext()",
+++              "Instruction": "IL_00b7: ldarg "
+++            },
+++            {
+++              "Id": 122,
+++              "StartLine": 36,
+++              "EndLine": 36,
+++              "StartColumn": 13,
+++              "EndColumn": 37,
+++              "Class": "CrossExchange.Controller.ShareController/<Post>d__7",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController/<Post>d__7::MoveNext()",
+++              "Instruction": "IL_0012: ldarg "
+++            },
+++            {
+++              "Id": 123,
+++              "StartLine": 38,
+++              "EndLine": 38,
+++              "StartColumn": 17,
+++              "EndColumn": 47,
+++              "Class": "CrossExchange.Controller.ShareController/<Post>d__7",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController/<Post>d__7::MoveNext()",
+++              "Instruction": "IL_002a: ldarg "
+++            },
+++            {
+++              "Id": 124,
+++              "StartLine": 41,
+++              "EndLine": 41,
+++              "StartColumn": 13,
+++              "EndColumn": 55,
+++              "Class": "CrossExchange.Controller.ShareController/<Post>d__7",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController/<Post>d__7::MoveNext()",
+++              "Instruction": "IL_0046: ldarg "
+++            },
+++            {
+++              "Id": 125,
+++              "StartLine": 43,
+++              "EndLine": 43,
+++              "StartColumn": 13,
+++              "EndColumn": 56,
+++              "Class": "CrossExchange.Controller.ShareController/<Post>d__7",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.ShareController/<Post>d__7::MoveNext()",
+++              "Instruction": "IL_00b7: ldarg "
+++            }
+++          ]
+++        },
+++        "CrossExchange\\Controller\\TradeController.cs": {
+++          "Instructions": [
+++            {
+++              "Id": 126,
+++              "StartLine": 16,
+++              "EndLine": 16,
+++              "StartColumn": 53,
+++              "EndColumn": 57,
+++              "Class": "CrossExchange.Controller.TradeController",
+++              "Method": "get__shareRepository",
+++              "MethodFullName": "CrossExchange.IShareRepository CrossExchange.Controller.TradeController::get__shareRepository()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 127,
+++              "StartLine": 16,
+++              "EndLine": 16,
+++              "StartColumn": 58,
+++              "EndColumn": 62,
+++              "Class": "CrossExchange.Controller.TradeController",
+++              "Method": "set__shareRepository",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController::set__shareRepository(CrossExchange.IShareRepository)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 128,
+++              "StartLine": 17,
+++              "EndLine": 17,
+++              "StartColumn": 53,
+++              "EndColumn": 57,
+++              "Class": "CrossExchange.Controller.TradeController",
+++              "Method": "get__tradeRepository",
+++              "MethodFullName": "CrossExchange.ITradeRepository CrossExchange.Controller.TradeController::get__tradeRepository()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 129,
+++              "StartLine": 17,
+++              "EndLine": 17,
+++              "StartColumn": 58,
+++              "EndColumn": 62,
+++              "Class": "CrossExchange.Controller.TradeController",
+++              "Method": "set__tradeRepository",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController::set__tradeRepository(CrossExchange.ITradeRepository)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 130,
+++              "StartLine": 18,
+++              "EndLine": 18,
+++              "StartColumn": 61,
+++              "EndColumn": 65,
+++              "Class": "CrossExchange.Controller.TradeController",
+++              "Method": "get__portfolioRepository",
+++              "MethodFullName": "CrossExchange.IPortfolioRepository CrossExchange.Controller.TradeController::get__portfolioRepository()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 131,
+++              "StartLine": 18,
+++              "EndLine": 18,
+++              "StartColumn": 66,
+++              "EndColumn": 70,
+++              "Class": "CrossExchange.Controller.TradeController",
+++              "Method": "set__portfolioRepository",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController::set__portfolioRepository(CrossExchange.IPortfolioRepository)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 132,
+++              "StartLine": 20,
+++              "EndLine": 20,
+++              "StartColumn": 9,
+++              "EndColumn": 141,
+++              "Class": "CrossExchange.Controller.TradeController",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController::.ctor(CrossExchange.IShareRepository,CrossExchange.ITradeRepository,CrossExchange.IPortfolioRepository)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 133,
+++              "StartLine": 22,
+++              "EndLine": 22,
+++              "StartColumn": 13,
+++              "EndColumn": 48,
+++              "Class": "CrossExchange.Controller.TradeController",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController::.ctor(CrossExchange.IShareRepository,CrossExchange.ITradeRepository,CrossExchange.IPortfolioRepository)",
+++              "Instruction": "IL_0008: ldarg "
+++            },
+++            {
+++              "Id": 134,
+++              "StartLine": 23,
+++              "EndLine": 23,
+++              "StartColumn": 13,
+++              "EndColumn": 48,
+++              "Class": "CrossExchange.Controller.TradeController",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController::.ctor(CrossExchange.IShareRepository,CrossExchange.ITradeRepository,CrossExchange.IPortfolioRepository)",
+++              "Instruction": "IL_0010: ldarg "
+++            },
+++            {
+++              "Id": 135,
+++              "StartLine": 24,
+++              "EndLine": 24,
+++              "StartColumn": 13,
+++              "EndColumn": 56,
+++              "Class": "CrossExchange.Controller.TradeController",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController::.ctor(CrossExchange.IShareRepository,CrossExchange.ITradeRepository,CrossExchange.IPortfolioRepository)",
+++              "Instruction": "IL_0018: ldarg "
+++            },
+++            {
+++              "Id": 136,
+++              "StartLine": 31,
+++              "EndLine": 31,
+++              "StartColumn": 13,
+++              "EndColumn": 96,
+++              "Class": "CrossExchange.Controller.TradeController/<GetAllTradings>d__13",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<GetAllTradings>d__13::MoveNext()",
+++              "Instruction": "IL_0024: ldarg "
+++            },
+++            {
+++              "Id": 137,
+++              "StartLine": 32,
+++              "EndLine": 32,
+++              "StartColumn": 13,
+++              "EndColumn": 30,
+++              "Class": "CrossExchange.Controller.TradeController/<GetAllTradings>d__13",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<GetAllTradings>d__13::MoveNext()",
+++              "Instruction": "IL_00b9: ldarg "
+++            },
+++            {
+++              "Id": 138,
+++              "StartLine": 31,
+++              "EndLine": 31,
+++              "StartColumn": 13,
+++              "EndColumn": 96,
+++              "Class": "CrossExchange.Controller.TradeController/<GetAllTradings>d__13",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<GetAllTradings>d__13::MoveNext()",
+++              "Instruction": "IL_0024: ldarg "
+++            },
+++            {
+++              "Id": 139,
+++              "StartLine": 32,
+++              "EndLine": 32,
+++              "StartColumn": 13,
+++              "EndColumn": 30,
+++              "Class": "CrossExchange.Controller.TradeController/<GetAllTradings>d__13",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<GetAllTradings>d__13::MoveNext()",
+++              "Instruction": "IL_00b9: ldarg "
+++            },
+++            {
+++              "Id": 140,
+++              "StartLine": 85,
+++              "EndLine": 85,
+++              "StartColumn": 59,
+++              "EndColumn": 76,
+++              "Class": "CrossExchange.Controller.TradeController/<>c",
+++              "Method": "<Post>b__14_4",
+++              "MethodFullName": "System.Boolean CrossExchange.Controller.TradeController/<>c::<Post>b__14_4(CrossExchange.Trade)",
+++              "Instruction": "IL_0000: ldarg x"
+++            },
+++            {
+++              "Id": 141,
+++              "StartLine": 85,
+++              "EndLine": 85,
+++              "StartColumn": 59,
+++              "EndColumn": 76,
+++              "Class": "CrossExchange.Controller.TradeController/<>c",
+++              "Method": "<Post>b__14_4",
+++              "MethodFullName": "System.Boolean CrossExchange.Controller.TradeController/<>c::<Post>b__14_4(CrossExchange.Trade)",
+++              "Instruction": "IL_0000: ldarg x"
+++            },
+++            {
+++              "Id": 142,
+++              "StartLine": 85,
+++              "EndLine": 85,
+++              "StartColumn": 87,
+++              "EndColumn": 99,
+++              "Class": "CrossExchange.Controller.TradeController/<>c",
+++              "Method": "<Post>b__14_5",
+++              "MethodFullName": "System.Int32 CrossExchange.Controller.TradeController/<>c::<Post>b__14_5(CrossExchange.Trade)",
+++              "Instruction": "IL_0000: ldarg x"
+++            },
+++            {
+++              "Id": 143,
+++              "StartLine": 85,
+++              "EndLine": 85,
+++              "StartColumn": 87,
+++              "EndColumn": 99,
+++              "Class": "CrossExchange.Controller.TradeController/<>c",
+++              "Method": "<Post>b__14_5",
+++              "MethodFullName": "System.Int32 CrossExchange.Controller.TradeController/<>c::<Post>b__14_5(CrossExchange.Trade)",
+++              "Instruction": "IL_0000: ldarg x"
+++            },
+++            {
+++              "Id": 144,
+++              "StartLine": 86,
+++              "EndLine": 86,
+++              "StartColumn": 57,
+++              "EndColumn": 75,
+++              "Class": "CrossExchange.Controller.TradeController/<>c",
+++              "Method": "<Post>b__14_6",
+++              "MethodFullName": "System.Boolean CrossExchange.Controller.TradeController/<>c::<Post>b__14_6(CrossExchange.Trade)",
+++              "Instruction": "IL_0000: ldarg x"
+++            },
+++            {
+++              "Id": 145,
+++              "StartLine": 86,
+++              "EndLine": 86,
+++              "StartColumn": 57,
+++              "EndColumn": 75,
+++              "Class": "CrossExchange.Controller.TradeController/<>c",
+++              "Method": "<Post>b__14_6",
+++              "MethodFullName": "System.Boolean CrossExchange.Controller.TradeController/<>c::<Post>b__14_6(CrossExchange.Trade)",
+++              "Instruction": "IL_0000: ldarg x"
+++            },
+++            {
+++              "Id": 146,
+++              "StartLine": 86,
+++              "EndLine": 86,
+++              "StartColumn": 86,
+++              "EndColumn": 98,
+++              "Class": "CrossExchange.Controller.TradeController/<>c",
+++              "Method": "<Post>b__14_7",
+++              "MethodFullName": "System.Int32 CrossExchange.Controller.TradeController/<>c::<Post>b__14_7(CrossExchange.Trade)",
+++              "Instruction": "IL_0000: ldarg x"
+++            },
+++            {
+++              "Id": 147,
+++              "StartLine": 86,
+++              "EndLine": 86,
+++              "StartColumn": 86,
+++              "EndColumn": 98,
+++              "Class": "CrossExchange.Controller.TradeController/<>c",
+++              "Method": "<Post>b__14_7",
+++              "MethodFullName": "System.Int32 CrossExchange.Controller.TradeController/<>c::<Post>b__14_7(CrossExchange.Trade)",
+++              "Instruction": "IL_0000: ldarg x"
+++            },
+++            {
+++              "Id": 148,
+++              "StartLine": 58,
+++              "EndLine": 58,
+++              "StartColumn": 13,
+++              "EndColumn": 37,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_002e: ldarg "
+++            },
+++            {
+++              "Id": 149,
+++              "StartLine": 60,
+++              "EndLine": 60,
+++              "StartColumn": 17,
+++              "EndColumn": 47,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0046: ldarg "
+++            },
+++            {
+++              "Id": 150,
+++              "StartLine": 63,
+++              "EndLine": 63,
+++              "StartColumn": 13,
+++              "EndColumn": 105,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0062: ldarg "
+++            },
+++            {
+++              "Id": 151,
+++              "StartLine": 64,
+++              "EndLine": 64,
+++              "StartColumn": 13,
+++              "EndColumn": 59,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_00f8: ldarg "
+++            },
+++            {
+++              "Id": 152,
+++              "StartLine": 65,
+++              "EndLine": 65,
+++              "StartColumn": 15,
+++              "EndColumn": 45,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0118: ldarg "
+++            },
+++            {
+++              "Id": 153,
+++              "StartLine": 66,
+++              "EndLine": 66,
+++              "StartColumn": 13,
+++              "EndColumn": 151,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0134: ldarg "
+++            },
+++            {
+++              "Id": 154,
+++              "StartLine": 67,
+++              "EndLine": 67,
+++              "StartColumn": 13,
+++              "EndColumn": 37,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0220: ldarg "
+++            },
+++            {
+++              "Id": 155,
+++              "StartLine": 68,
+++              "EndLine": 68,
+++              "StartColumn": 15,
+++              "EndColumn": 45,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0230: ldarg "
+++            },
+++            {
+++              "Id": 156,
+++              "StartLine": 69,
+++              "EndLine": 69,
+++              "StartColumn": 13,
+++              "EndColumn": 35,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_024c: ldarg "
+++            },
+++            {
+++              "Id": 157,
+++              "StartLine": 70,
+++              "EndLine": 70,
+++              "StartColumn": 13,
+++              "EndColumn": 39,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0253: ldarg "
+++            },
+++            {
+++              "Id": 158,
+++              "StartLine": 72,
+++              "EndLine": 72,
+++              "StartColumn": 17,
+++              "EndColumn": 40,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0277: ldarg "
+++            },
+++            {
+++              "Id": 159,
+++              "StartLine": 73,
+++              "EndLine": 73,
+++              "StartColumn": 17,
+++              "EndColumn": 58,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0282: ldarg "
+++            },
+++            {
+++              "Id": 160,
+++              "StartLine": 74,
+++              "EndLine": 74,
+++              "StartColumn": 17,
+++              "EndColumn": 48,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_029e: ldarg "
+++            },
+++            {
+++              "Id": 161,
+++              "StartLine": 75,
+++              "EndLine": 75,
+++              "StartColumn": 17,
+++              "EndColumn": 56,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_02ba: ldarg "
+++            },
+++            {
+++              "Id": 162,
+++              "StartLine": 76,
+++              "EndLine": 76,
+++              "StartColumn": 17,
+++              "EndColumn": 48,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_02d6: ldarg "
+++            },
+++            {
+++              "Id": 163,
+++              "StartLine": 77,
+++              "EndLine": 77,
+++              "StartColumn": 17,
+++              "EndColumn": 70,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_02f2: ldarg "
+++            },
+++            {
+++              "Id": 164,
+++              "StartLine": 80,
+++              "EndLine": 80,
+++              "StartColumn": 13,
+++              "EndColumn": 40,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0324: ldarg "
+++            },
+++            {
+++              "Id": 165,
+++              "StartLine": 82,
+++              "EndLine": 82,
+++              "StartColumn": 17,
+++              "EndColumn": 145,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0348: ldarg "
+++            },
+++            {
+++              "Id": 166,
+++              "StartLine": 83,
+++              "EndLine": 83,
+++              "StartColumn": 17,
+++              "EndColumn": 69,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0435: ldarg "
+++            },
+++            {
+++              "Id": 167,
+++              "StartLine": 84,
+++              "EndLine": 84,
+++              "StartColumn": 19,
+++              "EndColumn": 49,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0455: ldarg "
+++            },
+++            {
+++              "Id": 168,
+++              "StartLine": 85,
+++              "EndLine": 85,
+++              "StartColumn": 17,
+++              "EndColumn": 101,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0471: ldarg "
+++            },
+++            {
+++              "Id": 169,
+++              "StartLine": 86,
+++              "EndLine": 86,
+++              "StartColumn": 17,
+++              "EndColumn": 100,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_04c5: ldarg "
+++            },
+++            {
+++              "Id": 170,
+++              "StartLine": 87,
+++              "EndLine": 87,
+++              "StartColumn": 17,
+++              "EndColumn": 65,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0519: ldarg "
+++            },
+++            {
+++              "Id": 171,
+++              "StartLine": 89,
+++              "EndLine": 89,
+++              "StartColumn": 21,
+++              "EndColumn": 44,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0545: ldarg "
+++            },
+++            {
+++              "Id": 172,
+++              "StartLine": 90,
+++              "EndLine": 90,
+++              "StartColumn": 21,
+++              "EndColumn": 62,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0550: ldarg "
+++            },
+++            {
+++              "Id": 173,
+++              "StartLine": 91,
+++              "EndLine": 91,
+++              "StartColumn": 21,
+++              "EndColumn": 52,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_056c: ldarg "
+++            },
+++            {
+++              "Id": 174,
+++              "StartLine": 92,
+++              "EndLine": 92,
+++              "StartColumn": 21,
+++              "EndColumn": 60,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0588: ldarg "
+++            },
+++            {
+++              "Id": 175,
+++              "StartLine": 93,
+++              "EndLine": 93,
+++              "StartColumn": 21,
+++              "EndColumn": 52,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_05a4: ldarg "
+++            },
+++            {
+++              "Id": 176,
+++              "StartLine": 94,
+++              "EndLine": 94,
+++              "StartColumn": 21,
+++              "EndColumn": 74,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_05c0: ldarg "
+++            },
+++            {
+++              "Id": 177,
+++              "StartLine": 98,
+++              "EndLine": 98,
+++              "StartColumn": 21,
+++              "EndColumn": 51,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_05f5: ldarg "
+++            },
+++            {
+++              "Id": 178,
+++              "StartLine": 101,
+++              "EndLine": 101,
+++              "StartColumn": 13,
+++              "EndColumn": 58,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0619: ldarg "
+++            },
+++            {
+++              "Id": 179,
+++              "StartLine": 102,
+++              "EndLine": 102,
+++              "StartColumn": 13,
+++              "EndColumn": 47,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_068a: ldarg "
+++            },
+++            {
+++              "Id": 180,
+++              "StartLine": 58,
+++              "EndLine": 58,
+++              "StartColumn": 13,
+++              "EndColumn": 37,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_002e: ldarg "
+++            },
+++            {
+++              "Id": 181,
+++              "StartLine": 60,
+++              "EndLine": 60,
+++              "StartColumn": 17,
+++              "EndColumn": 47,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0046: ldarg "
+++            },
+++            {
+++              "Id": 182,
+++              "StartLine": 63,
+++              "EndLine": 63,
+++              "StartColumn": 13,
+++              "EndColumn": 105,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0062: ldarg "
+++            },
+++            {
+++              "Id": 183,
+++              "StartLine": 64,
+++              "EndLine": 64,
+++              "StartColumn": 13,
+++              "EndColumn": 59,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_00f8: ldarg "
+++            },
+++            {
+++              "Id": 184,
+++              "StartLine": 65,
+++              "EndLine": 65,
+++              "StartColumn": 15,
+++              "EndColumn": 45,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0118: ldarg "
+++            },
+++            {
+++              "Id": 185,
+++              "StartLine": 66,
+++              "EndLine": 66,
+++              "StartColumn": 13,
+++              "EndColumn": 151,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0134: ldarg "
+++            },
+++            {
+++              "Id": 186,
+++              "StartLine": 67,
+++              "EndLine": 67,
+++              "StartColumn": 13,
+++              "EndColumn": 37,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0220: ldarg "
+++            },
+++            {
+++              "Id": 187,
+++              "StartLine": 68,
+++              "EndLine": 68,
+++              "StartColumn": 15,
+++              "EndColumn": 45,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0230: ldarg "
+++            },
+++            {
+++              "Id": 188,
+++              "StartLine": 69,
+++              "EndLine": 69,
+++              "StartColumn": 13,
+++              "EndColumn": 35,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_024c: ldarg "
+++            },
+++            {
+++              "Id": 189,
+++              "StartLine": 70,
+++              "EndLine": 70,
+++              "StartColumn": 13,
+++              "EndColumn": 39,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0253: ldarg "
+++            },
+++            {
+++              "Id": 190,
+++              "StartLine": 72,
+++              "EndLine": 72,
+++              "StartColumn": 17,
+++              "EndColumn": 40,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0277: ldarg "
+++            },
+++            {
+++              "Id": 191,
+++              "StartLine": 73,
+++              "EndLine": 73,
+++              "StartColumn": 17,
+++              "EndColumn": 58,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0282: ldarg "
+++            },
+++            {
+++              "Id": 192,
+++              "StartLine": 74,
+++              "EndLine": 74,
+++              "StartColumn": 17,
+++              "EndColumn": 48,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_029e: ldarg "
+++            },
+++            {
+++              "Id": 193,
+++              "StartLine": 75,
+++              "EndLine": 75,
+++              "StartColumn": 17,
+++              "EndColumn": 56,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_02ba: ldarg "
+++            },
+++            {
+++              "Id": 194,
+++              "StartLine": 76,
+++              "EndLine": 76,
+++              "StartColumn": 17,
+++              "EndColumn": 48,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_02d6: ldarg "
+++            },
+++            {
+++              "Id": 195,
+++              "StartLine": 77,
+++              "EndLine": 77,
+++              "StartColumn": 17,
+++              "EndColumn": 70,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_02f2: ldarg "
+++            },
+++            {
+++              "Id": 196,
+++              "StartLine": 80,
+++              "EndLine": 80,
+++              "StartColumn": 13,
+++              "EndColumn": 40,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0324: ldarg "
+++            },
+++            {
+++              "Id": 197,
+++              "StartLine": 82,
+++              "EndLine": 82,
+++              "StartColumn": 17,
+++              "EndColumn": 145,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0348: ldarg "
+++            },
+++            {
+++              "Id": 198,
+++              "StartLine": 83,
+++              "EndLine": 83,
+++              "StartColumn": 17,
+++              "EndColumn": 69,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0435: ldarg "
+++            },
+++            {
+++              "Id": 199,
+++              "StartLine": 84,
+++              "EndLine": 84,
+++              "StartColumn": 19,
+++              "EndColumn": 49,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0455: ldarg "
+++            },
+++            {
+++              "Id": 200,
+++              "StartLine": 85,
+++              "EndLine": 85,
+++              "StartColumn": 17,
+++              "EndColumn": 101,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0471: ldarg "
+++            },
+++            {
+++              "Id": 201,
+++              "StartLine": 86,
+++              "EndLine": 86,
+++              "StartColumn": 17,
+++              "EndColumn": 100,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_04c5: ldarg "
+++            },
+++            {
+++              "Id": 202,
+++              "StartLine": 87,
+++              "EndLine": 87,
+++              "StartColumn": 17,
+++              "EndColumn": 65,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0519: ldarg "
+++            },
+++            {
+++              "Id": 203,
+++              "StartLine": 89,
+++              "EndLine": 89,
+++              "StartColumn": 21,
+++              "EndColumn": 44,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0545: ldarg "
+++            },
+++            {
+++              "Id": 204,
+++              "StartLine": 90,
+++              "EndLine": 90,
+++              "StartColumn": 21,
+++              "EndColumn": 62,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0550: ldarg "
+++            },
+++            {
+++              "Id": 205,
+++              "StartLine": 91,
+++              "EndLine": 91,
+++              "StartColumn": 21,
+++              "EndColumn": 52,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_056c: ldarg "
+++            },
+++            {
+++              "Id": 206,
+++              "StartLine": 92,
+++              "EndLine": 92,
+++              "StartColumn": 21,
+++              "EndColumn": 60,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0588: ldarg "
+++            },
+++            {
+++              "Id": 207,
+++              "StartLine": 93,
+++              "EndLine": 93,
+++              "StartColumn": 21,
+++              "EndColumn": 52,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_05a4: ldarg "
+++            },
+++            {
+++              "Id": 208,
+++              "StartLine": 94,
+++              "EndLine": 94,
+++              "StartColumn": 21,
+++              "EndColumn": 74,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_05c0: ldarg "
+++            },
+++            {
+++              "Id": 209,
+++              "StartLine": 98,
+++              "EndLine": 98,
+++              "StartColumn": 21,
+++              "EndColumn": 51,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_05f5: ldarg "
+++            },
+++            {
+++              "Id": 210,
+++              "StartLine": 101,
+++              "EndLine": 101,
+++              "StartColumn": 13,
+++              "EndColumn": 58,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_0619: ldarg "
+++            },
+++            {
+++              "Id": 211,
+++              "StartLine": 102,
+++              "EndLine": 102,
+++              "StartColumn": 13,
+++              "EndColumn": 47,
+++              "Class": "CrossExchange.Controller.TradeController/<Post>d__14",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.Controller.TradeController/<Post>d__14::MoveNext()",
+++              "Instruction": "IL_068a: ldarg "
+++            }
+++          ]
+++        },
+++        "CrossExchange\\Exceptions\\HttpStatusCodeException.cs": {
+++          "Instructions": [
+++            {
+++              "Id": 1,
+++              "StartLine": 29,
+++              "EndLine": 29,
+++              "StartColumn": 51,
+++              "EndColumn": 64,
+++              "Class": "CrossExchange.HttpStatusCodeException",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeException::.ctor(System.Int32)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 2,
+++              "StartLine": 8,
+++              "EndLine": 8,
+++              "StartColumn": 9,
+++              "EndColumn": 55,
+++              "Class": "CrossExchange.HttpStatusCodeException",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeException::.ctor(System.Int32)",
+++              "Instruction": "IL_000b: ldarg "
+++            },
+++            {
+++              "Id": 3,
+++              "StartLine": 10,
+++              "EndLine": 10,
+++              "StartColumn": 13,
+++              "EndColumn": 37,
+++              "Class": "CrossExchange.HttpStatusCodeException",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeException::.ctor(System.Int32)",
+++              "Instruction": "IL_0013: ldarg "
+++            },
+++            {
+++              "Id": 4,
+++              "StartLine": 29,
+++              "EndLine": 29,
+++              "StartColumn": 51,
+++              "EndColumn": 64,
+++              "Class": "CrossExchange.HttpStatusCodeException",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeException::.ctor(System.Int32,System.String)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 5,
+++              "StartLine": 13,
+++              "EndLine": 13,
+++              "StartColumn": 74,
+++              "EndColumn": 87,
+++              "Class": "CrossExchange.HttpStatusCodeException",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeException::.ctor(System.Int32,System.String)",
+++              "Instruction": "IL_000b: ldarg "
+++            },
+++            {
+++              "Id": 6,
+++              "StartLine": 15,
+++              "EndLine": 15,
+++              "StartColumn": 13,
+++              "EndColumn": 37,
+++              "Class": "CrossExchange.HttpStatusCodeException",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeException::.ctor(System.Int32,System.String)",
+++              "Instruction": "IL_0014: ldarg "
+++            },
+++            {
+++              "Id": 7,
+++              "StartLine": 18,
+++              "EndLine": 18,
+++              "StartColumn": 75,
+++              "EndColumn": 109,
+++              "Class": "CrossExchange.HttpStatusCodeException",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeException::.ctor(System.Int32,System.Exception)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 8,
+++              "StartLine": 22,
+++              "EndLine": 22,
+++              "StartColumn": 79,
+++              "EndColumn": 119,
+++              "Class": "CrossExchange.HttpStatusCodeException",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeException::.ctor(System.Int32,Newtonsoft.Json.Linq.JObject)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 9,
+++              "StartLine": 24,
+++              "EndLine": 24,
+++              "StartColumn": 13,
+++              "EndColumn": 47,
+++              "Class": "CrossExchange.HttpStatusCodeException",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeException::.ctor(System.Int32,Newtonsoft.Json.Linq.JObject)",
+++              "Instruction": "IL_000f: ldarg "
+++            },
+++            {
+++              "Id": 10,
+++              "StartLine": 27,
+++              "EndLine": 27,
+++              "StartColumn": 33,
+++              "EndColumn": 37,
+++              "Class": "CrossExchange.HttpStatusCodeException",
+++              "Method": "get_StatusCode",
+++              "MethodFullName": "System.Int32 CrossExchange.HttpStatusCodeException::get_StatusCode()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 11,
+++              "StartLine": 27,
+++              "EndLine": 27,
+++              "StartColumn": 38,
+++              "EndColumn": 42,
+++              "Class": "CrossExchange.HttpStatusCodeException",
+++              "Method": "set_StatusCode",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeException::set_StatusCode(System.Int32)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 12,
+++              "StartLine": 29,
+++              "EndLine": 29,
+++              "StartColumn": 37,
+++              "EndColumn": 41,
+++              "Class": "CrossExchange.HttpStatusCodeException",
+++              "Method": "get_ContentType",
+++              "MethodFullName": "System.String CrossExchange.HttpStatusCodeException::get_ContentType()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 13,
+++              "StartLine": 29,
+++              "EndLine": 29,
+++              "StartColumn": 42,
+++              "EndColumn": 46,
+++              "Class": "CrossExchange.HttpStatusCodeException",
+++              "Method": "set_ContentType",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeException::set_ContentType(System.String)",
+++              "Instruction": "IL_0000: ldarg "
+++            }
+++          ]
+++        },
+++        "CrossExchange\\Exceptions\\HttpStatusCodeExceptionMiddleware.cs": {
+++          "Instructions": [
+++            {
+++              "Id": 14,
+++              "StartLine": 13,
+++              "EndLine": 13,
+++              "StartColumn": 9,
+++              "EndColumn": 101,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware::.ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Logging.ILoggerFactory)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 15,
+++              "StartLine": 15,
+++              "EndLine": 15,
+++              "StartColumn": 13,
+++              "EndColumn": 75,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware::.ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Logging.ILoggerFactory)",
+++              "Instruction": "IL_0008: ldarg "
+++            },
+++            {
+++              "Id": 16,
+++              "StartLine": 16,
+++              "EndLine": 17,
+++              "StartColumn": 13,
+++              "EndColumn": 78,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware::.ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Logging.ILoggerFactory)",
+++              "Instruction": "IL_001e: ldarg "
+++            },
+++            {
+++              "Id": 17,
+++              "StartLine": 24,
+++              "EndLine": 24,
+++              "StartColumn": 17,
+++              "EndColumn": 38,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_002a: ldarg "
+++            },
+++            {
+++              "Id": 18,
+++              "StartLine": 26,
+++              "EndLine": 26,
+++              "StartColumn": 13,
+++              "EndColumn": 47,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_009d: stloc V_3"
+++            },
+++            {
+++              "Id": 19,
+++              "StartLine": 28,
+++              "EndLine": 28,
+++              "StartColumn": 17,
+++              "EndColumn": 49,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_00d2: ldarg "
+++            },
+++            {
+++              "Id": 20,
+++              "StartLine": 30,
+++              "EndLine": 31,
+++              "StartColumn": 21,
+++              "EndColumn": 116,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_00e9: ldarg "
+++            },
+++            {
+++              "Id": 21,
+++              "StartLine": 32,
+++              "EndLine": 32,
+++              "StartColumn": 21,
+++              "EndColumn": 27,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_0104: ldarg "
+++            },
+++            {
+++              "Id": 22,
+++              "StartLine": 35,
+++              "EndLine": 35,
+++              "StartColumn": 17,
+++              "EndColumn": 42,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_012a: ldarg "
+++            },
+++            {
+++              "Id": 23,
+++              "StartLine": 36,
+++              "EndLine": 36,
+++              "StartColumn": 17,
+++              "EndColumn": 61,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_013b: ldarg "
+++            },
+++            {
+++              "Id": 24,
+++              "StartLine": 37,
+++              "EndLine": 37,
+++              "StartColumn": 17,
+++              "EndColumn": 63,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_0157: ldarg "
+++            },
+++            {
+++              "Id": 25,
+++              "StartLine": 39,
+++              "EndLine": 39,
+++              "StartColumn": 17,
+++              "EndColumn": 63,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_0173: ldarg "
+++            },
+++            {
+++              "Id": 26,
+++              "StartLine": 24,
+++              "EndLine": 24,
+++              "StartColumn": 17,
+++              "EndColumn": 38,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_002a: ldarg "
+++            },
+++            {
+++              "Id": 27,
+++              "StartLine": 26,
+++              "EndLine": 26,
+++              "StartColumn": 13,
+++              "EndColumn": 47,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_009d: stloc V_3"
+++            },
+++            {
+++              "Id": 28,
+++              "StartLine": 28,
+++              "EndLine": 28,
+++              "StartColumn": 17,
+++              "EndColumn": 49,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_00d2: ldarg "
+++            },
+++            {
+++              "Id": 29,
+++              "StartLine": 30,
+++              "EndLine": 31,
+++              "StartColumn": 21,
+++              "EndColumn": 116,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_00e9: ldarg "
+++            },
+++            {
+++              "Id": 30,
+++              "StartLine": 32,
+++              "EndLine": 32,
+++              "StartColumn": 21,
+++              "EndColumn": 27,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_0104: ldarg "
+++            },
+++            {
+++              "Id": 31,
+++              "StartLine": 35,
+++              "EndLine": 35,
+++              "StartColumn": 17,
+++              "EndColumn": 42,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_012a: ldarg "
+++            },
+++            {
+++              "Id": 32,
+++              "StartLine": 36,
+++              "EndLine": 36,
+++              "StartColumn": 17,
+++              "EndColumn": 61,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_013b: ldarg "
+++            },
+++            {
+++              "Id": 33,
+++              "StartLine": 37,
+++              "EndLine": 37,
+++              "StartColumn": 17,
+++              "EndColumn": 63,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_0157: ldarg "
+++            },
+++            {
+++              "Id": 34,
+++              "StartLine": 39,
+++              "EndLine": 39,
+++              "StartColumn": 17,
+++              "EndColumn": 63,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.HttpStatusCodeExceptionMiddleware/<Invoke>d__3::MoveNext()",
+++              "Instruction": "IL_0173: ldarg "
+++            }
+++          ]
+++        },
+++        "CrossExchange\\Exceptions\\HttpStatusCodeExceptionMiddlewareExtensions.cs": {
+++          "Instructions": [
+++            {
+++              "Id": 35,
+++              "StartLine": 9,
+++              "EndLine": 9,
+++              "StartColumn": 13,
+++              "EndColumn": 79,
+++              "Class": "CrossExchange.HttpStatusCodeExceptionMiddlewareExtensions",
+++              "Method": "UseHttpStatusCodeExceptionMiddleware",
+++              "MethodFullName": "Microsoft.AspNetCore.Builder.IApplicationBuilder CrossExchange.HttpStatusCodeExceptionMiddlewareExtensions::UseHttpStatusCodeExceptionMiddleware(Microsoft.AspNetCore.Builder.IApplicationBuilder)",
+++              "Instruction": "IL_0001: ldarg builder"
+++            }
+++          ]
+++        },
+++        "CrossExchange\\Model\\HourlyShareRate.cs": {
+++          "Instructions": [
+++            {
+++              "Id": 36,
+++              "StartLine": 8,
+++              "EndLine": 8,
+++              "StartColumn": 25,
+++              "EndColumn": 29,
+++              "Class": "CrossExchange.HourlyShareRate",
+++              "Method": "get_Id",
+++              "MethodFullName": "System.Int32 CrossExchange.HourlyShareRate::get_Id()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 37,
+++              "StartLine": 8,
+++              "EndLine": 8,
+++              "StartColumn": 30,
+++              "EndColumn": 34,
+++              "Class": "CrossExchange.HourlyShareRate",
+++              "Method": "set_Id",
+++              "MethodFullName": "System.Void CrossExchange.HourlyShareRate::set_Id(System.Int32)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 38,
+++              "StartLine": 11,
+++              "EndLine": 11,
+++              "StartColumn": 37,
+++              "EndColumn": 41,
+++              "Class": "CrossExchange.HourlyShareRate",
+++              "Method": "get_TimeStamp",
+++              "MethodFullName": "System.DateTime CrossExchange.HourlyShareRate::get_TimeStamp()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 39,
+++              "StartLine": 11,
+++              "EndLine": 11,
+++              "StartColumn": 42,
+++              "EndColumn": 46,
+++              "Class": "CrossExchange.HourlyShareRate",
+++              "Method": "set_TimeStamp",
+++              "MethodFullName": "System.Void CrossExchange.HourlyShareRate::set_TimeStamp(System.DateTime)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 40,
+++              "StartLine": 14,
+++              "EndLine": 14,
+++              "StartColumn": 32,
+++              "EndColumn": 36,
+++              "Class": "CrossExchange.HourlyShareRate",
+++              "Method": "get_Symbol",
+++              "MethodFullName": "System.String CrossExchange.HourlyShareRate::get_Symbol()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 41,
+++              "StartLine": 14,
+++              "EndLine": 14,
+++              "StartColumn": 37,
+++              "EndColumn": 41,
+++              "Class": "CrossExchange.HourlyShareRate",
+++              "Method": "set_Symbol",
+++              "MethodFullName": "System.Void CrossExchange.HourlyShareRate::set_Symbol(System.String)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 42,
+++              "StartLine": 17,
+++              "EndLine": 17,
+++              "StartColumn": 31,
+++              "EndColumn": 35,
+++              "Class": "CrossExchange.HourlyShareRate",
+++              "Method": "get_Rate",
+++              "MethodFullName": "System.Decimal CrossExchange.HourlyShareRate::get_Rate()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 43,
+++              "StartLine": 17,
+++              "EndLine": 17,
+++              "StartColumn": 36,
+++              "EndColumn": 40,
+++              "Class": "CrossExchange.HourlyShareRate",
+++              "Method": "set_Rate",
+++              "MethodFullName": "System.Void CrossExchange.HourlyShareRate::set_Rate(System.Decimal)",
+++              "Instruction": "IL_0000: ldarg "
+++            }
+++          ]
+++        },
+++        "CrossExchange\\Model\\Portfolio.cs": {
+++          "Instructions": [
+++            {
+++              "Id": 44,
+++              "StartLine": 8,
+++              "EndLine": 8,
+++              "StartColumn": 25,
+++              "EndColumn": 29,
+++              "Class": "CrossExchange.Portfolio",
+++              "Method": "get_Id",
+++              "MethodFullName": "System.Int32 CrossExchange.Portfolio::get_Id()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 45,
+++              "StartLine": 8,
+++              "EndLine": 8,
+++              "StartColumn": 30,
+++              "EndColumn": 34,
+++              "Class": "CrossExchange.Portfolio",
+++              "Method": "set_Id",
+++              "MethodFullName": "System.Void CrossExchange.Portfolio::set_Id(System.Int32)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 46,
+++              "StartLine": 11,
+++              "EndLine": 11,
+++              "StartColumn": 30,
+++              "EndColumn": 34,
+++              "Class": "CrossExchange.Portfolio",
+++              "Method": "get_Name",
+++              "MethodFullName": "System.String CrossExchange.Portfolio::get_Name()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 47,
+++              "StartLine": 11,
+++              "EndLine": 11,
+++              "StartColumn": 35,
+++              "EndColumn": 39,
+++              "Class": "CrossExchange.Portfolio",
+++              "Method": "set_Name",
+++              "MethodFullName": "System.Void CrossExchange.Portfolio::set_Name(System.String)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 48,
+++              "StartLine": 13,
+++              "EndLine": 13,
+++              "StartColumn": 36,
+++              "EndColumn": 40,
+++              "Class": "CrossExchange.Portfolio",
+++              "Method": "get_Trade",
+++              "MethodFullName": "System.Collections.Generic.List`1<CrossExchange.Trade> CrossExchange.Portfolio::get_Trade()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 49,
+++              "StartLine": 13,
+++              "EndLine": 13,
+++              "StartColumn": 41,
+++              "EndColumn": 45,
+++              "Class": "CrossExchange.Portfolio",
+++              "Method": "set_Trade",
+++              "MethodFullName": "System.Void CrossExchange.Portfolio::set_Trade(System.Collections.Generic.List`1<CrossExchange.Trade>)",
+++              "Instruction": "IL_0000: ldarg "
+++            }
+++          ]
+++        },
+++        "CrossExchange\\Model\\Trade.cs": {
+++          "Instructions": [
+++            {
+++              "Id": 50,
+++              "StartLine": 5,
+++              "EndLine": 5,
+++              "StartColumn": 25,
+++              "EndColumn": 29,
+++              "Class": "CrossExchange.Trade",
+++              "Method": "get_Id",
+++              "MethodFullName": "System.Int32 CrossExchange.Trade::get_Id()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 51,
+++              "StartLine": 5,
+++              "EndLine": 5,
+++              "StartColumn": 30,
+++              "EndColumn": 34,
+++              "Class": "CrossExchange.Trade",
+++              "Method": "set_Id",
+++              "MethodFullName": "System.Void CrossExchange.Trade::set_Id(System.Int32)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 52,
+++              "StartLine": 7,
+++              "EndLine": 7,
+++              "StartColumn": 32,
+++              "EndColumn": 36,
+++              "Class": "CrossExchange.Trade",
+++              "Method": "get_Symbol",
+++              "MethodFullName": "System.String CrossExchange.Trade::get_Symbol()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 53,
+++              "StartLine": 7,
+++              "EndLine": 7,
+++              "StartColumn": 37,
+++              "EndColumn": 41,
+++              "Class": "CrossExchange.Trade",
+++              "Method": "set_Symbol",
+++              "MethodFullName": "System.Void CrossExchange.Trade::set_Symbol(System.String)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 54,
+++              "StartLine": 9,
+++              "EndLine": 9,
+++              "StartColumn": 33,
+++              "EndColumn": 37,
+++              "Class": "CrossExchange.Trade",
+++              "Method": "get_NoOfShares",
+++              "MethodFullName": "System.Int32 CrossExchange.Trade::get_NoOfShares()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 55,
+++              "StartLine": 9,
+++              "EndLine": 9,
+++              "StartColumn": 38,
+++              "EndColumn": 42,
+++              "Class": "CrossExchange.Trade",
+++              "Method": "set_NoOfShares",
+++              "MethodFullName": "System.Void CrossExchange.Trade::set_NoOfShares(System.Int32)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 56,
+++              "StartLine": 11,
+++              "EndLine": 11,
+++              "StartColumn": 32,
+++              "EndColumn": 36,
+++              "Class": "CrossExchange.Trade",
+++              "Method": "get_Price",
+++              "MethodFullName": "System.Decimal CrossExchange.Trade::get_Price()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 57,
+++              "StartLine": 11,
+++              "EndLine": 11,
+++              "StartColumn": 37,
+++              "EndColumn": 41,
+++              "Class": "CrossExchange.Trade",
+++              "Method": "set_Price",
+++              "MethodFullName": "System.Void CrossExchange.Trade::set_Price(System.Decimal)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 58,
+++              "StartLine": 13,
+++              "EndLine": 13,
+++              "StartColumn": 34,
+++              "EndColumn": 38,
+++              "Class": "CrossExchange.Trade",
+++              "Method": "get_PortfolioId",
+++              "MethodFullName": "System.Int32 CrossExchange.Trade::get_PortfolioId()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 59,
+++              "StartLine": 13,
+++              "EndLine": 13,
+++              "StartColumn": 39,
+++              "EndColumn": 43,
+++              "Class": "CrossExchange.Trade",
+++              "Method": "set_PortfolioId",
+++              "MethodFullName": "System.Void CrossExchange.Trade::set_PortfolioId(System.Int32)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 60,
+++              "StartLine": 15,
+++              "EndLine": 15,
+++              "StartColumn": 32,
+++              "EndColumn": 36,
+++              "Class": "CrossExchange.Trade",
+++              "Method": "get_Action",
+++              "MethodFullName": "System.String CrossExchange.Trade::get_Action()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 61,
+++              "StartLine": 15,
+++              "EndLine": 15,
+++              "StartColumn": 37,
+++              "EndColumn": 41,
+++              "Class": "CrossExchange.Trade",
+++              "Method": "set_Action",
+++              "MethodFullName": "System.Void CrossExchange.Trade::set_Action(System.String)",
+++              "Instruction": "IL_0000: ldarg "
+++            }
+++          ]
+++        },
+++        "CrossExchange\\Model\\TradeModel.cs": {
+++          "Instructions": [
+++            {
+++              "Id": 62,
+++              "StartLine": 8,
+++              "EndLine": 8,
+++              "StartColumn": 32,
+++              "EndColumn": 36,
+++              "Class": "CrossExchange.TradeModel",
+++              "Method": "get_Symbol",
+++              "MethodFullName": "System.String CrossExchange.TradeModel::get_Symbol()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 63,
+++              "StartLine": 8,
+++              "EndLine": 8,
+++              "StartColumn": 37,
+++              "EndColumn": 41,
+++              "Class": "CrossExchange.TradeModel",
+++              "Method": "set_Symbol",
+++              "MethodFullName": "System.Void CrossExchange.TradeModel::set_Symbol(System.String)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 64,
+++              "StartLine": 11,
+++              "EndLine": 11,
+++              "StartColumn": 33,
+++              "EndColumn": 37,
+++              "Class": "CrossExchange.TradeModel",
+++              "Method": "get_NoOfShares",
+++              "MethodFullName": "System.Int32 CrossExchange.TradeModel::get_NoOfShares()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 65,
+++              "StartLine": 11,
+++              "EndLine": 11,
+++              "StartColumn": 38,
+++              "EndColumn": 42,
+++              "Class": "CrossExchange.TradeModel",
+++              "Method": "set_NoOfShares",
+++              "MethodFullName": "System.Void CrossExchange.TradeModel::set_NoOfShares(System.Int32)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 66,
+++              "StartLine": 14,
+++              "EndLine": 14,
+++              "StartColumn": 34,
+++              "EndColumn": 38,
+++              "Class": "CrossExchange.TradeModel",
+++              "Method": "get_PortfolioId",
+++              "MethodFullName": "System.Int32 CrossExchange.TradeModel::get_PortfolioId()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 67,
+++              "StartLine": 14,
+++              "EndLine": 14,
+++              "StartColumn": 39,
+++              "EndColumn": 43,
+++              "Class": "CrossExchange.TradeModel",
+++              "Method": "set_PortfolioId",
+++              "MethodFullName": "System.Void CrossExchange.TradeModel::set_PortfolioId(System.Int32)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 68,
+++              "StartLine": 18,
+++              "EndLine": 18,
+++              "StartColumn": 32,
+++              "EndColumn": 36,
+++              "Class": "CrossExchange.TradeModel",
+++              "Method": "get_Action",
+++              "MethodFullName": "System.String CrossExchange.TradeModel::get_Action()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 69,
+++              "StartLine": 18,
+++              "EndLine": 18,
+++              "StartColumn": 37,
+++              "EndColumn": 41,
+++              "Class": "CrossExchange.TradeModel",
+++              "Method": "set_Action",
+++              "MethodFullName": "System.Void CrossExchange.TradeModel::set_Action(System.String)",
+++              "Instruction": "IL_0000: ldarg "
+++            }
+++          ]
+++        },
+++        "CrossExchange\\Repository\\GenericRepository.cs": {
+++          "Instructions": [
+++            {
+++              "Id": 70,
+++              "StartLine": 10,
+++              "EndLine": 10,
+++              "StartColumn": 48,
+++              "EndColumn": 52,
+++              "Class": "CrossExchange.GenericRepository`1",
+++              "Method": "get__dbContext",
+++              "MethodFullName": "CrossExchange.ExchangeContext CrossExchange.GenericRepository`1::get__dbContext()",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 71,
+++              "StartLine": 10,
+++              "EndLine": 10,
+++              "StartColumn": 53,
+++              "EndColumn": 57,
+++              "Class": "CrossExchange.GenericRepository`1",
+++              "Method": "set__dbContext",
+++              "MethodFullName": "System.Void CrossExchange.GenericRepository`1::set__dbContext(CrossExchange.ExchangeContext)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 72,
+++              "StartLine": 19,
+++              "EndLine": 19,
+++              "StartColumn": 13,
+++              "EndColumn": 54,
+++              "Class": "CrossExchange.GenericRepository`1",
+++              "Method": "Query",
+++              "MethodFullName": "System.Linq.IQueryable`1<T> CrossExchange.GenericRepository`1::Query()",
+++              "Instruction": "IL_0001: ldarg "
+++            },
+++            {
+++              "Id": 73,
+++              "StartLine": 14,
+++              "EndLine": 14,
+++              "StartColumn": 13,
+++              "EndColumn": 54,
+++              "Class": "CrossExchange.GenericRepository`1/<GetAsync>d__4",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.GenericRepository`1/<GetAsync>d__4::MoveNext()",
+++              "Instruction": "IL_000f: ldarg "
+++            },
+++            {
+++              "Id": 74,
+++              "StartLine": 14,
+++              "EndLine": 14,
+++              "StartColumn": 13,
+++              "EndColumn": 54,
+++              "Class": "CrossExchange.GenericRepository`1/<GetAsync>d__4",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.GenericRepository`1/<GetAsync>d__4::MoveNext()",
+++              "Instruction": "IL_000f: ldarg "
+++            },
+++            {
+++              "Id": 75,
+++              "StartLine": 24,
+++              "EndLine": 24,
+++              "StartColumn": 13,
+++              "EndColumn": 45,
+++              "Class": "CrossExchange.GenericRepository`1/<InsertAsync>d__6",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.GenericRepository`1/<InsertAsync>d__6::MoveNext()",
+++              "Instruction": "IL_000f: ldarg "
+++            },
+++            {
+++              "Id": 76,
+++              "StartLine": 25,
+++              "EndLine": 25,
+++              "StartColumn": 13,
+++              "EndColumn": 49,
+++              "Class": "CrossExchange.GenericRepository`1/<InsertAsync>d__6",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.GenericRepository`1/<InsertAsync>d__6::MoveNext()",
+++              "Instruction": "IL_002b: ldarg "
+++            },
+++            {
+++              "Id": 77,
+++              "StartLine": 24,
+++              "EndLine": 24,
+++              "StartColumn": 13,
+++              "EndColumn": 45,
+++              "Class": "CrossExchange.GenericRepository`1/<InsertAsync>d__6",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.GenericRepository`1/<InsertAsync>d__6::MoveNext()",
+++              "Instruction": "IL_000f: ldarg "
+++            },
+++            {
+++              "Id": 78,
+++              "StartLine": 25,
+++              "EndLine": 25,
+++              "StartColumn": 13,
+++              "EndColumn": 49,
+++              "Class": "CrossExchange.GenericRepository`1/<InsertAsync>d__6",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.GenericRepository`1/<InsertAsync>d__6::MoveNext()",
+++              "Instruction": "IL_002b: ldarg "
+++            },
+++            {
+++              "Id": 79,
+++              "StartLine": 30,
+++              "EndLine": 30,
+++              "StartColumn": 13,
+++              "EndColumn": 67,
+++              "Class": "CrossExchange.GenericRepository`1/<UpdateAsync>d__7",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.GenericRepository`1/<UpdateAsync>d__7::MoveNext()",
+++              "Instruction": "IL_000f: ldarg "
+++            },
+++            {
+++              "Id": 80,
+++              "StartLine": 31,
+++              "EndLine": 31,
+++              "StartColumn": 13,
+++              "EndColumn": 49,
+++              "Class": "CrossExchange.GenericRepository`1/<UpdateAsync>d__7",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.GenericRepository`1/<UpdateAsync>d__7::MoveNext()",
+++              "Instruction": "IL_002c: ldarg "
+++            },
+++            {
+++              "Id": 81,
+++              "StartLine": 30,
+++              "EndLine": 30,
+++              "StartColumn": 13,
+++              "EndColumn": 67,
+++              "Class": "CrossExchange.GenericRepository`1/<UpdateAsync>d__7",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.GenericRepository`1/<UpdateAsync>d__7::MoveNext()",
+++              "Instruction": "IL_000f: ldarg "
+++            },
+++            {
+++              "Id": 82,
+++              "StartLine": 31,
+++              "EndLine": 31,
+++              "StartColumn": 13,
+++              "EndColumn": 49,
+++              "Class": "CrossExchange.GenericRepository`1/<UpdateAsync>d__7",
+++              "Method": "MoveNext",
+++              "MethodFullName": "System.Void CrossExchange.GenericRepository`1/<UpdateAsync>d__7::MoveNext()",
+++              "Instruction": "IL_002c: ldarg "
+++            }
+++          ]
+++        },
+++        "CrossExchange\\Repository\\PortfolioRepository.cs": {
+++          "Instructions": [
+++            {
+++              "Id": 83,
+++              "StartLine": 8,
+++              "EndLine": 8,
+++              "StartColumn": 9,
+++              "EndColumn": 62,
+++              "Class": "CrossExchange.PortfolioRepository",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.PortfolioRepository::.ctor(CrossExchange.ExchangeContext)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 84,
+++              "StartLine": 10,
+++              "EndLine": 10,
+++              "StartColumn": 13,
+++              "EndColumn": 36,
+++              "Class": "CrossExchange.PortfolioRepository",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.PortfolioRepository::.ctor(CrossExchange.ExchangeContext)",
+++              "Instruction": "IL_0008: ldarg "
+++            },
+++            {
+++              "Id": 85,
+++              "StartLine": 15,
+++              "EndLine": 15,
+++              "StartColumn": 13,
+++              "EndColumn": 78,
+++              "Class": "CrossExchange.PortfolioRepository",
+++              "Method": "GetAll",
+++              "MethodFullName": "System.Linq.IQueryable`1<CrossExchange.Portfolio> CrossExchange.PortfolioRepository::GetAll()",
+++              "Instruction": "IL_0001: ldarg "
+++            }
+++          ]
+++        },
+++        "CrossExchange\\Repository\\ShareRepository.cs": {
+++          "Instructions": [
+++            {
+++              "Id": 86,
+++              "StartLine": 5,
+++              "EndLine": 5,
+++              "StartColumn": 9,
+++              "EndColumn": 58,
+++              "Class": "CrossExchange.ShareRepository",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.ShareRepository::.ctor(CrossExchange.ExchangeContext)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 87,
+++              "StartLine": 7,
+++              "EndLine": 7,
+++              "StartColumn": 13,
+++              "EndColumn": 36,
+++              "Class": "CrossExchange.ShareRepository",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.ShareRepository::.ctor(CrossExchange.ExchangeContext)",
+++              "Instruction": "IL_0008: ldarg "
+++            }
+++          ]
+++        },
+++        "CrossExchange\\Repository\\TradeRepository.cs": {
+++          "Instructions": [
+++            {
+++              "Id": 88,
+++              "StartLine": 5,
+++              "EndLine": 5,
+++              "StartColumn": 9,
+++              "EndColumn": 58,
+++              "Class": "CrossExchange.TradeRepository",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.TradeRepository::.ctor(CrossExchange.ExchangeContext)",
+++              "Instruction": "IL_0000: ldarg "
+++            },
+++            {
+++              "Id": 89,
+++              "StartLine": 7,
+++              "EndLine": 7,
+++              "StartColumn": 13,
+++              "EndColumn": 36,
+++              "Class": "CrossExchange.TradeRepository",
+++              "Method": ".ctor",
+++              "MethodFullName": "System.Void CrossExchange.TradeRepository::.ctor(CrossExchange.ExchangeContext)",
+++              "Instruction": "IL_0008: ldarg "
+++            }
+++          ]
+++        }
+++      },
+++      "Locations": [
+++        {
+++          "File": "C:\\Jagbir\\CrossExchange\\CrossExchange.Tests\\bin\\Debug\\netcoreapp2.0\\CrossExchange.dll",
+++          "BackupFile": "C:\\Jagbir\\CrossExchange\\CrossExchange.Tests\\bin\\Debug\\netcoreapp2.0\\CrossExchange.uninstrumented.dll",
+++          "PdbFile": "C:\\Jagbir\\CrossExchange\\CrossExchange.Tests\\bin\\Debug\\netcoreapp2.0\\CrossExchange.pdb",
+++          "BackupPdbFile": "C:\\Jagbir\\CrossExchange\\CrossExchange.Tests\\bin\\Debug\\netcoreapp2.0\\CrossExchange.uninstrumented.pdb"
+++        }
+++      ]
+++    }
+++  ]
+++}
++\ No newline at end of file
++-- 
++2.18.0.windows.1
++
 -- 
 2.18.0.windows.1
 
